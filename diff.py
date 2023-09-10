@@ -2764,6 +2764,7 @@ def diff_sameline(
     # Probably regalloc difference, or signed vs unsigned
 
     # Compare each field in order
+    print(new, old)
     new_parts, old_parts = new.split(None, 1), old.split(None, 1)
     newfields, oldfields = new_parts[1].split(","), old_parts[1].split(",")
     if ignore_last_field:
