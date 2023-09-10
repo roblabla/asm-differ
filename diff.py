@@ -2838,17 +2838,26 @@ def score_diff_lines(
         max_index = None
 
     for index, (line1, line2) in enumerate(lines):
-        if max_index is not None and index > max_index:
-            break
-        if line1 and line2 and line1.mnemonic == line2.mnemonic:
-            sp, rp, _ = diff_sameline(line1, line2, config, symbol_map)
-            num_stack_penalties += sp
-            num_regalloc_penalties += rp
-        else:
+        try:
+            if max_index is not None and index > max_index:
+                break
+            if line1 and line2 and line1.mnemonic == line2.mnemonic:
+                sp, rp, _ = diff_sameline(line1, line2, config, symbol_map)
+                num_stack_penalties += sp
+                num_regalloc_penalties += rp
+            else:
+                if line1:
+                    diff_delete(line1.scorable_line)
+                if line2:
+                    diff_insert(line2.scorable_line)
+        except Exception as e:
+            line1_str = ""
             if line1:
-                diff_delete(line1.scorable_line)
+                line1_str = line1.original
+            line2_str = ""
             if line2:
-                diff_insert(line2.scorable_line)
+                line2_str = line2.original
+            raise Exception(f"Failed to process {line1_str} or {line2_str} on line {index}: {str(e)}") from e
 
     insertions_co = Counter(insertions)
     deletions_co = Counter(deletions)
